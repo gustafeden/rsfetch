@@ -1,0 +1,107 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - target: x86_64-apple-darwin
+            runner: macos-13
+            cross: false
+          - target: aarch64-apple-darwin
+            runner: macos-latest
+            cross: false
+          - target: x86_64-unknown-linux-gnu
+            runner: ubuntu-latest
+            cross: false
+          - target: aarch64-unknown-linux-gnu
+            runner: ubuntu-latest
+            cross: true
+
+    runs-on: ${{ matrix.runner }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Install cross
+        if: matrix.cross
+        run: cargo install cross --git https://github.com/cross-rs/cross
+
+      # --- Build rsfetch ---
+
+      - name: Build rsfetch
+        run: |
+          if [ "${{ matrix.cross }}" = "true" ]; then
+            cross build --release --target ${{ matrix.target }}
+          else
+            cargo build --release --target ${{ matrix.target }}
+          fi
+
+      - name: Strip rsfetch
+        if: "!matrix.cross"
+        run: strip target/${{ matrix.target }}/release/rsfetch
+
+      - name: Package rsfetch
+        run: |
+          cd target/${{ matrix.target }}/release
+          tar czf ../../../rsfetch-${{ matrix.target }}.tar.gz rsfetch
+          cd ../../..
+
+      # --- Build installer ---
+
+      - name: Build installer
+        run: |
+          cd installer
+          if [ "${{ matrix.cross }}" = "true" ]; then
+            cross build --release --target ${{ matrix.target }}
+          else
+            cargo build --release --target ${{ matrix.target }}
+          fi
+
+      - name: Strip installer
+        if: "!matrix.cross"
+        run: strip installer/target/${{ matrix.target }}/release/rsfetch-installer
+
+      - name: Package installer
+        run: |
+          cd installer/target/${{ matrix.target }}/release
+          tar czf ../../../../rsfetch-installer-${{ matrix.target }}.tar.gz rsfetch-installer
+          cd ../../../..
+
+      # --- Upload ---
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: binaries-${{ matrix.target }}
+          path: |
+            rsfetch-${{ matrix.target }}.tar.gz
+            rsfetch-installer-${{ matrix.target }}.tar.gz
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: "*.tar.gz"

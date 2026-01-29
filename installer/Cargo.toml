@@ -1,0 +1,10 @@
+[package]
+name = "rsfetch-installer"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+blaeck = { git = "https://github.com/gustafeden/blaeck.git", tag = "v0.2.0" }
+ureq = "2"
+flate2 = "1"
+tar = "0.4"

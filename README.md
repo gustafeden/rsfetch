@@ -37,6 +37,12 @@ A fast system fetch display for your terminal, written in Rust. Powered by [blae
 ## Install
 
 ```sh
+curl -fsSL https://raw.githubusercontent.com/gustafeden/rsfetch/main/install.sh | sh
+```
+
+Or with cargo:
+
+```sh
 cargo install --git https://github.com/gustafeden/rsfetch
 ```
 
