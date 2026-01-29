@@ -79,9 +79,43 @@ enum StepStatus {
     Done(String),
 }
 
+fn detect_shell_rc() -> &'static str {
+    let shell = std::env::var("SHELL").unwrap_or_default();
+    if shell.ends_with("/zsh") {
+        "~/.zshrc"
+    } else if shell.ends_with("/bash") {
+        let home = std::env::var("HOME").unwrap_or_default();
+        if std::path::Path::new(&format!("{}/.bash_profile", home)).exists() {
+            "~/.bash_profile"
+        } else {
+            "~/.bashrc"
+        }
+    } else if shell.ends_with("/fish") {
+        "fish"
+    } else {
+        "~/.profile"
+    }
+}
+
+enum InstallScenario {
+    Fresh,
+    Update { old_version: String },
+    Reinstall,
+}
+
+fn detect_existing() -> Option<String> {
+    Command::new("rsfetch")
+        .arg("--version")
+        .output()
+        .ok()
+        .filter(|o| o.status.success())
+        .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string())
+}
+
 struct InstallerState {
     platform: String,
     install_dir: PathBuf,
+    existing_version: Option<String>,
     steps: Vec<(String, StepStatus)>,
     error: Option<String>,
     finished: bool,
@@ -90,9 +124,11 @@ struct InstallerState {
 impl InstallerState {
     fn new() -> Self {
         let install_dir = resolve_install_dir();
+        let existing_version = detect_existing();
         Self {
             platform: platform_label().to_string(),
             install_dir,
+            existing_version,
             steps: vec![
                 ("Platform".to_string(), StepStatus::Pending),
                 ("Install to".to_string(), StepStatus::Pending),
@@ -160,31 +196,120 @@ fn build_ui(state: &InstallerState, spinner_frame: usize) -> Element {
         });
     }
 
-    // Success box
+    // Success box + post-install info
     if state.finished && state.error.is_none() {
-        rows.push(element! { Text(content: "") });
-        rows.push(element! {
-            Text(content: "  \u{256d}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{256e}", color: Color::Green)
-        });
-        rows.push(element! {
-            Text(content: "  \u{2502}  \u{2713} rsfetch installed!            \u{2502}", color: Color::Green)
-        });
-        rows.push(element! {
-            Text(content: "  \u{2502}    Run: rsfetch                  \u{2502}", color: Color::Green)
-        });
-        rows.push(element! {
-            Text(content: "  \u{2570}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{256f}", color: Color::Green)
-        });
+        let scenario = match &state.existing_version {
+            None => InstallScenario::Fresh,
+            Some(old) if old != &format!("rsfetch {}", VERSION) => {
+                InstallScenario::Update { old_version: old.clone() }
+            }
+            Some(_) => InstallScenario::Reinstall,
+        };
 
-        // PATH warning if needed
-        let install_str = state.install_dir.display().to_string();
-        if let Ok(path) = std::env::var("PATH") {
-            if !path.split(':').any(|p| p == install_str) {
-                rows.push(element! { Text(content: "") });
+        let box_width = 46;
+        let border_h = "\u{2500}".repeat(box_width);
+        let top = format!("  \u{256d}{}\u{256e}", border_h);
+        let bot = format!("  \u{2570}{}\u{256f}", border_h);
+        let box_line = |s: &str| format!("  \u{2502}  {:<width$}\u{2502}", s, width = box_width - 2);
+
+        rows.push(element! { Text(content: "") });
+        rows.push(element! { Text(content: top.clone(), color: Color::Green) });
+
+        match &scenario {
+            InstallScenario::Fresh => {
                 rows.push(element! {
-                    Text(content: format!("  note: add {} to your PATH", display_path(&state.install_dir)), dim: true)
+                    Text(content: box_line(&format!("\u{2713} rsfetch v{} installed", VERSION)), color: Color::Green)
                 });
             }
+            InstallScenario::Update { old_version } => {
+                rows.push(element! {
+                    Text(content: box_line("\u{2713} rsfetch updated"), color: Color::Green)
+                });
+                rows.push(element! {
+                    Text(content: box_line(&format!("  {} \u{2192} v{}", old_version, VERSION)), color: Color::Green)
+                });
+            }
+            InstallScenario::Reinstall => {
+                rows.push(element! {
+                    Text(content: box_line(&format!("\u{2713} rsfetch v{} reinstalled", VERSION)), color: Color::Green)
+                });
+            }
+        }
+
+        rows.push(element! { Text(content: bot.clone(), color: Color::Green) });
+
+        // PATH warning (all scenarios)
+        let install_str = state.install_dir.display().to_string();
+        let needs_path = std::env::var("PATH")
+            .map(|p| !p.split(':').any(|d| d == install_str))
+            .unwrap_or(false);
+
+        if needs_path {
+            let shell_rc = detect_shell_rc();
+            let dir_display = display_path(&state.install_dir);
+
+            rows.push(element! { Text(content: "") });
+            rows.push(element! {
+                Text(content: "  Add to your PATH (run once):", color: Color::Yellow)
+            });
+
+            if shell_rc == "fish" {
+                rows.push(element! {
+                    Text(content: format!("    set -Ux fish_user_paths {} $fish_user_paths", dir_display))
+                });
+            } else {
+                rows.push(element! {
+                    Text(content: format!("    echo 'export PATH=\"{}:$PATH\"' >> {}", dir_display, shell_rc))
+                });
+                rows.push(element! {
+                    Text(content: format!("    source {}", shell_rc))
+                });
+            }
+        }
+
+        // Fresh install: get started + links
+        if matches!(scenario, InstallScenario::Fresh) {
+            rows.push(element! { Text(content: "") });
+            rows.push(element! {
+                Text(content: "  Get started:", bold: true)
+            });
+            rows.push(element! {
+                Box(flex_direction: FlexDirection::Row) {
+                    Text(content: "    rsfetch")
+                    Text(content: "                     run it", dim: true)
+                }
+            });
+            rows.push(element! {
+                Box(flex_direction: FlexDirection::Row) {
+                    Text(content: "    rsfetch -c cyan")
+                    Text(content: "             try a color theme", dim: true)
+                }
+            });
+            rows.push(element! {
+                Box(flex_direction: FlexDirection::Row) {
+                    Text(content: "    rsfetch --help")
+                    Text(content: "              see all options", dim: true)
+                }
+            });
+
+            rows.push(element! { Text(content: "") });
+            rows.push(element! {
+                Text(content: "  Config: rsfetch --print-config > ~/.config/rsfetch/config.toml", dim: true)
+            });
+            rows.push(element! {
+                Text(content: "  More:   https://github.com/gustafeden/rsfetch", color: Color::Cyan, dim: true)
+            });
+        }
+
+        // Update: what's new link
+        if matches!(scenario, InstallScenario::Update { .. }) {
+            rows.push(element! { Text(content: "") });
+            rows.push(element! {
+                Box(flex_direction: FlexDirection::Row) {
+                    Text(content: "  What's new: ", dim: true)
+                    Text(content: format!("https://github.com/gustafeden/rsfetch/releases/tag/v{}", VERSION), color: Color::Cyan)
+                }
+            });
         }
 
         rows.push(element! { Text(content: "") });
