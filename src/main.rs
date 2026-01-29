@@ -22,6 +22,10 @@ struct Args {
     #[arg(short, long)]
     logo: Option<String>,
 
+    /// Path to custom ASCII art file
+    #[arg(long)]
+    logo_file: Option<String>,
+
     /// Hide the logo
     #[arg(long)]
     no_logo: bool,
@@ -88,17 +92,23 @@ fn main() -> std::io::Result<()> {
         }
     }
 
-    let logo_name = if args.no_logo {
-        Some("none".to_string())
+    let logo_file = args.logo_file.or(cfg.logo_file.clone());
+
+    let logo_art = if args.no_logo {
+        String::new()
+    } else if let Some(path) = &logo_file {
+        logo::from_file(path).unwrap_or_else(|e| {
+            eprintln!("warning: could not read logo file {}: {}", path, e);
+            logo::detect().art.to_string()
+        })
     } else {
-        args.logo.or(cfg.logo.clone())
+        let logo_name = args.logo.or(cfg.logo.clone());
+        match logo_name.as_deref() {
+            Some("none" | "off") => String::new(),
+            Some("auto") | None => logo::detect().art.to_string(),
+            Some(name) => logo::by_name(name).art.to_string(),
+        }
     };
 
-    let logo = match logo_name.as_deref() {
-        Some("none" | "off") => logo::by_name("none"),
-        Some("auto") | None => logo::detect(),
-        Some(name) => logo::by_name(name),
-    };
-
-    render::render(&info, logo.art, &theme, &cfg)
+    render::render(&info, &logo_art, &theme, &cfg)
 }

@@ -8,6 +8,7 @@ use std::path::PathBuf;
 pub struct Config {
     pub color: Option<String>,
     pub logo: Option<String>,
+    pub logo_file: Option<String>,
     pub palette: Option<bool>,
     pub separator: Option<String>,
     pub fields: Option<Vec<String>>,
@@ -141,6 +142,9 @@ pub fn generate_default() -> String {
 
 # Logo: apple, linux, ubuntu, arch, debian, fedora, none, auto
 # logo = "auto"
+
+# Custom ASCII art file (overrides logo)
+# logo_file = "~/.config/rsfetch/logo.txt"
 
 # Show color palette at bottom
 # palette = true

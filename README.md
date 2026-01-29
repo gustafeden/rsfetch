@@ -73,6 +73,7 @@ rsfetch [OPTIONS]
 Options:
   -c, --color <COLOR>    Color theme (green, cyan, red, magenta, yellow, blue, mono)
   -l, --logo <LOGO>      Logo to display (apple, linux, ubuntu, arch, debian, fedora, none)
+      --logo-file <PATH> Path to custom ASCII art file
       --no-logo          Hide the logo
       --json             Output as JSON
       --clear-cache      Clear the cache and re-gather all info
@@ -102,6 +103,20 @@ Auto-detected by OS. Override with `--logo`:
 ```sh
 rsfetch --logo arch
 rsfetch --no-logo
+```
+
+### Custom ASCII art
+
+Use any text file as a logo:
+
+```sh
+rsfetch --logo-file ~/my-logo.txt
+```
+
+Or set it in the config:
+
+```toml
+logo_file = "~/.config/rsfetch/logo.txt"
 ```
 
 ### JSON output
@@ -151,6 +166,7 @@ Config options:
 |-----|------|-------------|
 | `color` | string | Color theme name |
 | `logo` | string | Logo name or `"auto"` |
+| `logo_file` | string | Path to custom ASCII art file |
 | `palette` | bool | Show color palette (default: true) |
 | `separator` | string | Separator character (default: `"-"`) |
 | `fields` | list | Fields to show, in order |

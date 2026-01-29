@@ -19,6 +19,19 @@ pub fn detect() -> Logo {
     }
 }
 
+pub fn from_file(path: &str) -> Result<String, std::io::Error> {
+    let expanded = if path.starts_with('~') {
+        if let Ok(home) = std::env::var("HOME") {
+            format!("{}{}", home, &path[1..])
+        } else {
+            path.to_string()
+        }
+    } else {
+        path.to_string()
+    };
+    std::fs::read_to_string(expanded)
+}
+
 pub fn by_name(name: &str) -> Logo {
     match name.to_lowercase().as_str() {
         "apple" | "macos" | "mac" => apple(),
