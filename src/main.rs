@@ -1,3 +1,4 @@
+mod animate;
 mod cache;
 mod color;
 mod config;
@@ -45,6 +46,10 @@ struct Args {
     /// Print default config to stdout
     #[arg(long)]
     print_config: bool,
+
+    /// Animate the logo (background color cycling)
+    #[arg(long)]
+    animate: bool,
 }
 
 fn main() -> std::io::Result<()> {
@@ -110,5 +115,9 @@ fn main() -> std::io::Result<()> {
         }
     };
 
-    render::render(&info, &logo_art, &theme, &cfg)
+    if args.animate {
+        render::render_animated(&info, &logo_art, &theme, &cfg)
+    } else {
+        render::render(&info, &logo_art, &theme, &cfg)
+    }
 }

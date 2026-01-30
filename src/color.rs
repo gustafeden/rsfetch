@@ -98,3 +98,25 @@ impl Theme {
         &["green", "cyan", "red", "magenta", "yellow", "blue", "mono"]
     }
 }
+
+/// Map a blaeck Color to a basic ANSI color number (0-7).
+pub fn color_to_ansi(c: &Color) -> u8 {
+    match c {
+        Color::Black => 0,
+        Color::Red => 1,
+        Color::Green => 2,
+        Color::Yellow => 3,
+        Color::Blue => 4,
+        Color::Magenta => 5,
+        Color::Cyan => 6,
+        Color::White => 7,
+        Color::DarkGray => 0,
+        Color::LightRed => 1,
+        Color::LightGreen => 2,
+        Color::LightYellow => 3,
+        Color::LightBlue => 4,
+        Color::LightMagenta => 5,
+        Color::LightCyan => 6,
+        _ => 2, // default to green
+    }
+}

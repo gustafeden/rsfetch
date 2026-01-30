@@ -2,7 +2,8 @@ use blaeck::prelude::*;
 use blaeck::Blaeck;
 use std::io;
 
-use crate::color::Theme;
+use crate::animate;
+use crate::color::{self, Theme};
 use crate::config::Config;
 use crate::info::SystemInfo;
 
@@ -90,6 +91,35 @@ pub fn render(info: &SystemInfo, logo: &str, theme: &Theme, cfg: &Config) -> io:
     let mut blaeck = Blaeck::new(io::stdout())?;
     blaeck.render(ui)?;
     blaeck.unmount()?;
+
+    Ok(())
+}
+
+pub fn render_animated(info: &SystemInfo, logo: &str, theme: &Theme, cfg: &Config) -> io::Result<()> {
+    // Normal render first
+    render(info, logo, theme, cfg)?;
+
+    if logo.is_empty() {
+        return Ok(());
+    }
+
+    // Calculate geometry
+    let logo_lines = logo.lines().count();
+    let info_lines = {
+        let active = cfg.active_fields();
+        let mut count = 2; // title + separator
+        count += active.len();
+        if cfg.show_palette() {
+            count += 3; // blank + 2 palette rows
+        }
+        count
+    };
+    let total_height = std::cmp::max(logo_lines, info_lines) as u16;
+
+    let original_color = color::color_to_ansi(&theme.logo);
+
+    // Animate in foreground — blocks until keypress, then exits
+    animate::run_foreground(logo, total_height, original_color);
 
     Ok(())
 }

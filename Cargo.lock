@@ -586,6 +586,7 @@ version = "0.1.5"
 dependencies = [
  "blaeck",
  "clap",
+ "libc",
  "serde",
  "serde_json",
  "sysinfo",
