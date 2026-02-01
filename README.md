@@ -267,6 +267,14 @@ Color values can be a named color (`"cyan"`, `"light_red"`, etc.) or an RGB arra
 - [clap](https://crates.io/crates/clap) — CLI argument parsing
 - [image](https://crates.io/crates/image) — image loading and processing (boot mode backgrounds)
 
+## Releasing
+
+1. Bump `version` in `Cargo.toml` and `installer/Cargo.toml`
+2. Commit: `git commit -am "v0.2.0"`
+3. Tag and push: `git tag v0.2.0 && git push && git push origin v0.2.0`
+
+GitHub Actions builds binaries for macOS/Linux (Intel + ARM) and creates the release.
+
 ## License
 
 MIT
