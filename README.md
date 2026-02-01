@@ -82,6 +82,7 @@ Options:
       --boot             Boot sequence mode (retro console animation)
       --left             Boot screen alignment: left (default)
       --center           Boot screen alignment: center
+      --right            Boot screen alignment: right
       --animate          Animate the logo (color cycling)
   -h, --help             Print help
   -V, --version          Print version
@@ -164,6 +165,12 @@ Without an image, rsfetch renders a procedural starfield with earth and moon.
 | `height` | int | auto/23 | Canvas height in rows |
 | `timeout` | int | `120` | Seconds before auto-close |
 | `star_brightness` | int | `30` | Star detection threshold (0-255) |
+| `render_mode` | string | `"auto"` | `auto` (detect terminal), `image` (force iTerm2), `ascii` (force half-block) |
+| `align` | string | `"left"` | `left`, `center`, or `right` (CLI flags override) |
+| `min_width` | int | `10` | Minimum canvas width in columns |
+| `min_height` | int | `5` | Minimum canvas height in rows |
+| `max_width` | int | — | Maximum canvas width in columns |
+| `max_height` | int | — | Maximum canvas height in rows |
 
 ### JSON output
 
