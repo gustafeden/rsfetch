@@ -13,26 +13,13 @@ A fast system fetch display for your terminal, written in Rust. Powered by [blae
 
 ## Output
 
-```
-                    'c.          gustafeden@hostname
-                 ,xNMM.          --------------------------
-               .OMMMMo           OS: MacOS 15.5 arm64
-               OMMM0,            Host: Mac15,6
-     .;loddo:' loolloddol;.      Kernel: 24.5.0
-   cKMMMMMMMMMMNWMMMMMMMMMM0:    Uptime: 32 days, 17 hours
- .KMMMMMMMMMMMMMMMMMMMMMMMWd.    Packages: 214 (brew)
- XMMMMMMMMMMMMMMMMMMMMMMMX.      Shell: zsh
-;MMMMMMMMMMMMMMMMMMMMMMMM:       Resolution: 1800x1169, 2560x1440
-:MMMMMMMMMMMMMMMMMMMMMMMM:       DE: Aqua
-.MMMMMMMMMMMMMMMMMMMMMMMMX.      WM: Quartz Compositor
- kMMMMMMMMMMMMMMMMMMMMMMMMWd.    WM Theme: Blue (Dark)
- .XMMMMMMMMMMMMMMMMMMMMMMMMMMk   Terminal: WezTerm
-  .XMMMMMMMMMMMMMMMMMMMMMMMMK.   CPU: Apple M3 Pro (11)
-    kMMMMMMMMMMMMMMMMMMMMMMd     GPU: Apple M3 Pro
-     ;KMMMMMMMWXXWMMMMMMMk.      Memory: 7083MiB / 36864MiB
-       .cooc,.    .,coo:.        Disk (/): 753GiB / 926GiB (81%)
-                                 Local IP: 192.168.1.100
-```
+![rsfetch](demo/fetch.gif)
+
+### Boot mode
+
+![boot — procedural starfield](demo/boot.gif)
+
+![boot — background image](demo/boot-image.gif)
 
 ## Install
 
@@ -126,24 +113,18 @@ logo_file = "~/.config/rsfetch/logo.txt"
 
 ### Boot mode
 
-A retro console-inspired boot animation. Shows a starfield with earth and moon by default, or a custom background image converted to half-block ASCII art.
+A retro console-inspired boot animation. Shows a starfield with earth and moon by default, or a custom background image. Press any key to dismiss, or it auto-closes after the configured timeout.
 
 ```sh
 rsfetch --boot
 rsfetch --boot --center
 ```
 
-Add it to your shell RC file (`.zshrc`, `.bashrc`) for a startup splash:
-
-```sh
-rsfetch --boot
-```
-
-Press any key to dismiss, or it auto-closes after the configured timeout.
+Add it to your shell RC file (`.zshrc`, `.bashrc`) for a startup splash.
 
 #### Background image
 
-Point `[boot] image` at a PNG or JPEG to use it as the background. The image is converted to half-block characters with full RGB color. Stars in the image (isolated bright pixels against dark space) will twinkle.
+Point `[boot] image` at a PNG or JPEG to use it as the background. Images are converted to half-block characters (`▄▀█`) with full RGB color — every cell packs two vertical pixels using foreground and background colors. The conversion is pure Rust with no external tools. Three stretch modes control how the image fits the canvas: `fill` stretches to fit, `fit` letterboxes to preserve aspect ratio, `crop` fills and trims the edges.
 
 ```toml
 [boot]
@@ -153,6 +134,24 @@ transparency = 0        # 0 = black bg, 1-255 = dark pixels transparent
 ```
 
 Without an image, rsfetch renders a procedural starfield with earth and moon.
+
+#### Full-resolution image mode
+
+Terminals that support inline images (iTerm2, WezTerm, Ghostty, kitty) can render the background at full pixel resolution instead of half-block ASCII. rsfetch auto-detects this — no config needed.
+
+To force a specific mode:
+
+```toml
+[boot]
+render_mode = "image"   # force inline image (iTerm2 protocol)
+render_mode = "ascii"   # force half-block characters
+render_mode = "auto"    # auto-detect (default)
+```
+
+Limitations:
+- Inline image mode uses the iTerm2 image protocol. Terminals that don't support it will show nothing — use `render_mode = "ascii"` as a fallback.
+- Image resizes on terminal resize may briefly flicker.
+- VHS and screen recorders capture the half-block fallback, not the inline image.
 
 #### Boot config reference
 
