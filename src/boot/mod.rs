@@ -40,6 +40,8 @@ pub fn run(
     image_cell_size: Option<(f32, f32)>, // natural cell dimensions for aspect ratio
     min_size: (u16, u16),
     max_size: (u16, u16),
+    entrance: &str,
+    exit: &str,
 ) {
     use std::os::unix::io::AsRawFd;
 
@@ -147,7 +149,7 @@ pub fn run(
     let moon_cy = (bh as f32) * 0.26;
     let moon_radius = (bh as f32) * 0.11;
 
-    let mut timeline = Timeline::new();
+    let mut timeline = Timeline::new(entrance, exit);
     let timeout = std::time::Duration::from_secs(timeout_secs.unwrap_or(120));
     let start_time = std::time::Instant::now();
     let frame_duration = std::time::Duration::from_millis(1000 / FPS);

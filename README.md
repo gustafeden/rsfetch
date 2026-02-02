@@ -130,7 +130,6 @@ Point `[boot] image` at a PNG or JPEG to use it as the background. Images are co
 [boot]
 image = "~/.config/rsfetch/space.png"
 stretch = "fill"        # fill, fit, or crop
-transparency = 0        # 0 = black bg, 1-255 = dark pixels transparent
 ```
 
 Without an image, rsfetch renders a procedural starfield with earth and moon.
@@ -159,7 +158,6 @@ Limitations:
 |-----|------|---------|-------------|
 | `image` | string | — | Path to background image (PNG/JPEG) |
 | `stretch` | string | `"fill"` | `fill` (stretch), `fit` (letterbox), `crop` |
-| `transparency` | int | `0` | Dark pixel threshold: 0 = opaque black, 1-255 = transparent |
 | `width` | int | auto/68 | Canvas width in columns |
 | `height` | int | auto/23 | Canvas height in rows |
 | `timeout` | int | `120` | Seconds before auto-close |
@@ -170,6 +168,8 @@ Limitations:
 | `min_height` | int | `5` | Minimum canvas height in rows |
 | `max_width` | int | — | Maximum canvas width in columns |
 | `max_height` | int | — | Maximum canvas height in rows |
+| `entrance` | string | `"slow"` | Entrance animation: `slow` (~1.2s), `fast` (~400ms), `instant` |
+| `exit` | string | `"slow"` | Exit animation: `slow` (~400ms), `fast` (~200ms), `instant` |
 
 ### JSON output
 

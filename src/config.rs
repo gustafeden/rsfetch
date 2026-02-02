@@ -33,6 +33,8 @@ pub struct BootConfig {
     pub min_height: Option<u16>,
     pub max_width: Option<u16>,
     pub max_height: Option<u16>,
+    pub entrance: Option<String>,
+    pub exit: Option<String>,
 }
 
 #[derive(Deserialize, Default)]
@@ -225,6 +227,8 @@ pub fn generate_default() -> String {
 # min_height = 12                          # Minimum canvas height in rows
 # max_width = 120                          # Maximum canvas width in columns
 # max_height = 40                          # Maximum canvas height in rows
+# entrance = "slow"                        # Entrance animation: slow (~1.2s), fast (~400ms), instant
+# exit = "slow"                            # Exit animation: slow (~400ms), fast (~200ms), instant
 "#
     .to_string()
 }

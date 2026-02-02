@@ -225,7 +225,9 @@ fn main() -> std::io::Result<()> {
         } else {
             None
         };
-        boot::run(&info, centered, right_aligned, bg, raw_image, render_mode, boot_w, boot_h, timeout, image_source, image_cell_size, (min_w, min_h), (max_w, max_h));
+        let entrance = boot_cfg.and_then(|b| b.entrance.as_deref()).unwrap_or("slow");
+        let exit = boot_cfg.and_then(|b| b.exit.as_deref()).unwrap_or("slow");
+        boot::run(&info, centered, right_aligned, bg, raw_image, render_mode, boot_w, boot_h, timeout, image_source, image_cell_size, (min_w, min_h), (max_w, max_h), entrance, exit);
         return Ok(());
     }
 
