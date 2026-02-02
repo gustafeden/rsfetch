@@ -25,9 +25,9 @@ Output goes to `demo/` as `.gif` files. Embed in README.
 
 ### AUR (Arch Linux)
 
-- [ ] Create `PKGBUILD` for AUR
-- [ ] Submit as `rsfetch` or `rsfetch-bin` (binary package)
-- [ ] Users install with: `yay -S rsfetch`
+- [x] Create `PKGBUILD` for AUR
+- [x] Submit as `rsfetch-gustafeden-bin` (binary package)
+- [x] Users install with: `yay -S rsfetch-gustafeden-bin`
 
 ### crates.io
 
