@@ -18,9 +18,9 @@ Output goes to `demo/` as `.gif` files. Embed in README.
 
 ### Homebrew (macOS)
 
-- [ ] Create `github.com/gustafeden/homebrew-tap` repo
-- [ ] Add formula that downloads release binary from GitHub
-- [ ] Users install with: `brew tap gustafeden/tap && brew install rsfetch`
+- [x] Create `github.com/gustafeden/homebrew-tap` repo
+- [x] Add formula that downloads release binary from GitHub
+- [x] Users install with: `brew tap gustafeden/tap && brew install rsfetch`
 - [ ] Once adoption grows, submit to homebrew-core for `brew install rsfetch`
 
 ### AUR (Arch Linux)
@@ -37,7 +37,7 @@ Output goes to `demo/` as `.gif` files. Embed in README.
 
 ## GitHub Discoverability
 
-- [ ] Add repo topics: `neofetch`, `fastfetch`, `system-info`, `fetch`, `terminal`, `rust`, `cli`
+- [x] Add repo topics: `neofetch`, `fastfetch`, `system-info`, `fetch`, `terminal`, `rust`, `cli`
 - [ ] Add GIFs to README (the boot mode is the differentiator)
 - [ ] Submit PR to [awesome-fetch](https://github.com/beucismis/awesome-fetch)
 
