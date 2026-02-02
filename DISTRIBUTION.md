@@ -33,9 +33,11 @@ Output goes to `demo/` as `.gif` files. Embed in README.
 
 ### crates.io
 
-- [ ] `cargo publish` — lets Rust users `cargo install rsfetch`
-- [ ] Already have metadata in Cargo.toml (license, repo, keywords, categories)
-- [ ] Note: blaeck is a git dependency — may need to publish blaeck first or vendor it
+- [x] Already have metadata in Cargo.toml (license, repo, keywords, categories)
+- [x] Switched to crates.io version of blaeck (was git dependency)
+- [x] Transfer request submitted to current owner - [Issue #7](https://github.com/Phate6660/rsfetch/issues/7)
+- [ ] Once transfer approved: `cargo publish` — lets Rust users `cargo install rsfetch`
+- [ ] Alternative: publish as `bootfetch` or `rsfetch-new` if transfer denied
 
 ## GitHub Discoverability
 
