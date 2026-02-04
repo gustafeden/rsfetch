@@ -50,9 +50,8 @@ yay -S blaeckfetch-bin                                # Arch Linux
 
 Demo: https://github.com/gustafeden/blaeckfetch
 
-[Image: demo/boot.gif]
-[Image: demo/boot-image.gif]
-[Image: demo/fetch.gif]
+[Image: demo/default.gif]
+[Image: demo/splash-image.gif]
 
 ---
 
@@ -97,7 +96,7 @@ The unique part: retro splash mode with procedural starfield 🌟
 
 Written in Rust. ~7ms execution time.
 
-[GIF: demo/boot.gif]
+[GIF: demo/splash-image.gif]
 
 https://github.com/gustafeden/blaeckfetch
 
@@ -107,7 +106,7 @@ blaeckfetch: ~7ms ✅
 
 57x faster system fetch tool in Rust, with a retro console splash animation mode 🚀
 
-[GIF: demo/boot-image.gif]
+[GIF: demo/default.gif]
 
 https://github.com/gustafeden/blaeckfetch
 
@@ -116,7 +115,7 @@ Built a neofetch alternative with a retro splash mode 🌟
 
 Check out the procedural starfield animation:
 
-[GIF: demo/boot.gif]
+[GIF: demo/splash-image.gif]
 
 57x faster • Rust • Custom backgrounds • ~7ms runtime
 

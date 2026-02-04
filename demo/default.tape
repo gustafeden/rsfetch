@@ -8,6 +8,7 @@ Set Height 600
 Set Theme "Catppuccin Mocha"
 Set Padding 20
 
+Set TypingSpeed 20ms
 Type "blaeckfetch"
 Enter
 Sleep 3s

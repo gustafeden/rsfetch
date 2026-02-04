@@ -7,9 +7,8 @@ How to get blaeckfetch in front of people.
 Record with [VHS](https://github.com/charmbracelet/vhs). Tapes are in `demo/`.
 
 ```sh
-vhs demo/fetch.tape        # standard fetch output
-vhs demo/boot.tape          # boot mode (procedural starfield)
-vhs demo/boot-image.tape    # boot mode with background image
+vhs demo/default.tape        # default mode (moon logo + system info)
+vhs demo/splash-image.tape   # splash mode with background image
 ```
 
 Output goes to `demo/` as `.gif` files. Embed in README.

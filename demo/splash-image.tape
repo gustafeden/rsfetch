@@ -8,7 +8,10 @@ Set Height 700
 Set Theme "Catppuccin Mocha"
 Set Padding 20
 
-Type "VHS=1 blaeckfetch --splash"
+Set TypingSpeed 20ms
+
+Env VHS "1"
+Type "blaeckfetch --splash"
 Enter
 Sleep 4s
 Type " "
