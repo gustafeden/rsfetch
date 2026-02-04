@@ -1,5 +1,5 @@
 /target
 /installer/target
 .DS_Store
-rsfetch-bin
+blaeckfetch-bin
 .claude

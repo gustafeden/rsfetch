@@ -6,14 +6,20 @@ use std::path::PathBuf;
 #[derive(Deserialize, Default)]
 #[serde(default)]
 pub struct Config {
+    pub mode: Option<String>,
     pub color: Option<String>,
     pub logo: Option<String>,
     pub logo_file: Option<String>,
     pub palette: Option<bool>,
     pub separator: Option<String>,
+    pub label_align: Option<String>,
+    pub label_position: Option<String>,
+    pub value_align: Option<String>,
+    pub field_separator: Option<String>,
     pub fields: Option<Vec<String>>,
     pub labels: Option<HashMap<String, String>>,
     pub colors: Option<ColorsConfig>,
+    pub splash: Option<BootConfig>,
     pub boot: Option<BootConfig>,
 }
 
@@ -120,25 +126,28 @@ impl Config {
         ]
     }
 
-    pub fn show_palette(&self) -> bool {
-        self.palette.unwrap_or(true)
-    }
-
-    pub fn separator_char(&self) -> &str {
-        self.separator.as_deref().unwrap_or("-")
-    }
-
-    pub fn active_fields(&self) -> Vec<String> {
-        self.fields
-            .clone()
-            .unwrap_or_else(Config::default_fields)
-    }
-
     pub fn label_for(&self, key: &str) -> String {
         self.labels
             .as_ref()
             .and_then(|m| m.get(key).cloned())
             .unwrap_or_else(|| key.to_string())
+    }
+
+    /// Get splash config, checking both [splash] and [boot] sections.
+    pub fn splash_config(&self) -> Option<&BootConfig> {
+        self.splash.as_ref().or(self.boot.as_ref())
+    }
+
+    /// Get active fields for a given mode.
+    pub fn active_fields_for_mode(&self, mode: crate::mode::Mode) -> Vec<String> {
+        self.fields
+            .clone()
+            .unwrap_or_else(|| mode.default_fields())
+    }
+
+    /// Whether to show palette for a given mode.
+    pub fn show_palette_for_mode(&self, mode: crate::mode::Mode) -> bool {
+        self.palette.unwrap_or_else(|| mode.default_palette())
     }
 }
 
@@ -148,30 +157,48 @@ pub fn default_config_path() -> PathBuf {
 
 fn dirs_config() -> PathBuf {
     if let Ok(home) = std::env::var("HOME") {
-        PathBuf::from(home).join(".config").join("rsfetch")
+        PathBuf::from(home).join(".config").join("blaeckfetch")
     } else {
-        PathBuf::from(".config/rsfetch")
+        PathBuf::from(".config/blaeckfetch")
     }
 }
 
 pub fn generate_default() -> String {
-    r#"# rsfetch configuration
-# Place this file at ~/.config/rsfetch/config.toml
+    r#"# blaeckfetch configuration
+# Place this file at ~/.config/blaeckfetch/config.toml
+
+# Display mode: default (moon + minimal), neofetch (classic layout), splash (animation)
+# mode = "default"
 
 # Color theme: green, cyan, red, magenta, yellow, blue, mono
 # color = "green"
 
-# Logo: apple, linux, ubuntu, arch, debian, fedora, none, auto
+# Logo: moon, apple, linux, ubuntu, arch, debian, fedora, none, auto
 # logo = "auto"
 
 # Custom ASCII art file (overrides logo)
-# logo_file = "~/.config/rsfetch/logo.txt"
+# logo_file = "~/.config/blaeckfetch/logo.txt"
 
 # Show color palette at bottom
 # palette = true
 
 # Separator character
 # separator = "-"
+
+# Label alignment: left (default) or right (colons line up)
+# label_align = "right"
+
+# Label position: left (default) or right (value first, then label)
+# label_position = "right"
+
+# Value alignment: left (default) or right (values form a right-aligned column)
+# value_align = "right"
+
+# String between label and value (default: ": ")
+# Use "fill" for a line that fills the gap: OS ──────── MacOS 15.5
+# field_separator = ": "
+# field_separator = " → "
+# field_separator = "fill"
 
 # Fields to display (in order). Remove or comment out entries to hide them.
 # fields = [
@@ -209,12 +236,12 @@ pub fn generate_default() -> String {
 # separator = "dark_gray"
 # logo = "green"
 
-# Boot sequence mode (retro console inspired)
-# Run with: rsfetch --boot
+# Splash mode (retro console animation)
+# Run with: blaeckfetch --splash
 # Use --center or --left to control alignment.
 # Without an image, shows a procedural starfield with earth and moon.
-# [boot]
-# image = "~/.config/rsfetch/space.png"   # Background image (PNG/JPEG)
+# [splash]
+# image = "~/.config/blaeckfetch/space.png"   # Background image (PNG/JPEG)
 # stretch = "fill"                         # fill (stretch), fit (letterbox), or crop
 # transparency = 0                         # 0 = opaque black bg, 1-255 = dark pixels become transparent
 # width = 68                               # Canvas width in columns (default: auto from image or 68)

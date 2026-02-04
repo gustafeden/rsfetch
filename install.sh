@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -eo pipefail
 
-# rsfetch installer (blaeck-sh)
-# Usage: curl -fsSL https://gustafeden.github.io/rsfetch/install.sh | bash
+# blaeckfetch installer (blaeck-sh)
+# Usage: curl -fsSL https://gustafeden.github.io/blaeckfetch/install.sh | bash
 
-REPO="gustafeden/rsfetch"
+REPO="gustafeden/blaeckfetch"
 BLAECK_SH_URL="https://gustafeden.github.io/blaeck-sh/blaeck.sh"
 
 # ---------------------------------------------------------------------------
@@ -84,8 +84,8 @@ resolve_install_dir() {
 # ---------------------------------------------------------------------------
 detect_existing() {
     EXISTING_VERSION=""
-    if command -v rsfetch &>/dev/null; then
-        EXISTING_VERSION="$(rsfetch --version 2>/dev/null || true)"
+    if command -v blaeckfetch &>/dev/null; then
+        EXISTING_VERSION="$(blaeckfetch --version 2>/dev/null || true)"
     fi
 }
 
@@ -127,7 +127,7 @@ render_ui() {
     local -a lines=()
 
     # Header
-    lines+=("$(bk_style "  rsfetch installer v${VERSION}" --bold --color white)")
+    lines+=("$(bk_style "  blaeckfetch installer v${VERSION}" --bold --color white)")
     lines+=("$(bk_dim "  ────────────────────")")
     lines+=("")
 
@@ -166,7 +166,7 @@ render_ui() {
     if [[ "${FINISHED:-0}" -eq 1 && -z "${ERROR_MSG:-}" ]]; then
         local scenario="fresh"
         if [[ -n "$EXISTING_VERSION" ]]; then
-            if [[ "$EXISTING_VERSION" == "rsfetch $VERSION" ]]; then
+            if [[ "$EXISTING_VERSION" == "blaeckfetch $VERSION" ]]; then
                 scenario="reinstall"
             else
                 scenario="update"
@@ -178,18 +178,18 @@ render_ui() {
         case "$scenario" in
             fresh)
                 local box_line1
-                box_line1="$(bk_green "✓") rsfetch v${VERSION} installed"
+                box_line1="$(bk_green "✓") blaeckfetch v${VERSION} installed"
                 lines+=("$(bk_box --style round --color green "$box_line1")")
                 ;;
             update)
                 local box_line1 box_line2
-                box_line1="$(bk_green "✓") rsfetch updated"
+                box_line1="$(bk_green "✓") blaeckfetch updated"
                 box_line2="  ${EXISTING_VERSION} → v${VERSION}"
                 lines+=("$(bk_box --style round --color green "$box_line1" "$box_line2")")
                 ;;
             reinstall)
                 local box_line1
-                box_line1="$(bk_green "✓") rsfetch v${VERSION} reinstalled"
+                box_line1="$(bk_green "✓") blaeckfetch v${VERSION} reinstalled"
                 lines+=("$(bk_box --style round --color green "$box_line1")")
                 ;;
         esac
@@ -219,18 +219,18 @@ render_ui() {
         if [[ "$scenario" == "fresh" ]]; then
             lines+=("")
             lines+=("$(bk_bold "  Get started:")")
-            lines+=("    rsfetch$(bk_dim "                     run it")")
-            lines+=("    rsfetch -c cyan$(bk_dim "             try a color theme")")
-            lines+=("    rsfetch --help$(bk_dim "              see all options")")
+            lines+=("    blaeckfetch$(bk_dim "                     run it")")
+            lines+=("    blaeckfetch -c cyan$(bk_dim "             try a color theme")")
+            lines+=("    blaeckfetch --help$(bk_dim "              see all options")")
             lines+=("")
-            lines+=("$(bk_dim "  Config: rsfetch --print-config > ~/.config/rsfetch/config.toml")")
-            lines+=("$(bk_dim "  More:   ")$(bk_cyan "https://github.com/gustafeden/rsfetch")")
+            lines+=("$(bk_dim "  Config: blaeckfetch --print-config > ~/.config/blaeckfetch/config.toml")")
+            lines+=("$(bk_dim "  More:   ")$(bk_cyan "https://github.com/gustafeden/blaeckfetch")")
         fi
 
         # Update: what's new
         if [[ "$scenario" == "update" ]]; then
             lines+=("")
-            lines+=("$(bk_dim "  What's new: ")$(bk_cyan "https://github.com/gustafeden/rsfetch/releases/tag/v${VERSION}")")
+            lines+=("$(bk_dim "  What's new: ")$(bk_cyan "https://github.com/gustafeden/blaeckfetch/releases/tag/v${VERSION}")")
         fi
 
         lines+=("")
@@ -270,14 +270,14 @@ main() {
 
     # Step 2: Download
     STEP_STATUS[2]="active"
-    local url="https://github.com/${REPO}/releases/download/v${VERSION}/rsfetch-${TARGET}.tar.gz"
+    local url="https://github.com/${REPO}/releases/download/v${VERSION}/blaeckfetch-${TARGET}.tar.gz"
     local tmpdir
     tmpdir="$(mktemp -d)"
     trap 'rm -rf "$tmpdir"; bk_render_done' EXIT
 
     # Download with spinner
     local download_err=""
-    curl -fsSL "$url" -o "$tmpdir/rsfetch.tar.gz" 2>/dev/null &
+    curl -fsSL "$url" -o "$tmpdir/blaeckfetch.tar.gz" 2>/dev/null &
     local dl_pid=$!
 
     while kill -0 "$dl_pid" 2>/dev/null; do
@@ -289,16 +289,16 @@ main() {
     if ! wait "$dl_pid"; then
         STEP_STATUS[2]="fail"
         STEP_DETAIL[2]="download failed"
-        ERROR_MSG="could not download rsfetch v${VERSION} for ${TARGET}"
+        ERROR_MSG="could not download blaeckfetch v${VERSION} for ${TARGET}"
         render_ui
         exit 1
     fi
 
     local size_bytes size_mb
-    size_bytes="$(wc -c < "$tmpdir/rsfetch.tar.gz" | tr -d ' ')"
+    size_bytes="$(wc -c < "$tmpdir/blaeckfetch.tar.gz" | tr -d ' ')"
     size_mb="$(awk "BEGIN { printf \"%.1f\", $size_bytes / 1048576 }")"
     STEP_STATUS[2]="done"
-    STEP_DETAIL[2]="rsfetch v${VERSION} (${size_mb} MB)"
+    STEP_DETAIL[2]="blaeckfetch v${VERSION} (${size_mb} MB)"
 
     render_ui
 
@@ -306,19 +306,19 @@ main() {
     STEP_STATUS[3]="active"
     render_ui
 
-    tar xzf "$tmpdir/rsfetch.tar.gz" -C "$tmpdir"
-    if [[ ! -f "$tmpdir/rsfetch" ]]; then
+    tar xzf "$tmpdir/blaeckfetch.tar.gz" -C "$tmpdir"
+    if [[ ! -f "$tmpdir/blaeckfetch" ]]; then
         STEP_STATUS[3]="fail"
         STEP_DETAIL[3]="binary not found in archive"
-        ERROR_MSG="rsfetch binary not found in archive"
+        ERROR_MSG="blaeckfetch binary not found in archive"
         render_ui
         exit 1
     fi
 
-    chmod +x "$tmpdir/rsfetch"
-    cp "$tmpdir/rsfetch" "$INSTALL_DIR/rsfetch"
+    chmod +x "$tmpdir/blaeckfetch"
+    cp "$tmpdir/blaeckfetch" "$INSTALL_DIR/blaeckfetch"
     STEP_STATUS[3]="done"
-    STEP_DETAIL[3]="$(display_path "$INSTALL_DIR/rsfetch")"
+    STEP_DETAIL[3]="$(display_path "$INSTALL_DIR/blaeckfetch")"
     render_ui
 
     # Step 4: Verify
@@ -326,13 +326,13 @@ main() {
     render_ui
 
     local verify_out
-    if verify_out="$("$INSTALL_DIR/rsfetch" --version 2>&1)"; then
+    if verify_out="$("$INSTALL_DIR/blaeckfetch" --version 2>&1)"; then
         STEP_STATUS[4]="done"
         STEP_DETAIL[4]="$verify_out"
     else
         STEP_STATUS[4]="fail"
         STEP_DETAIL[4]="verification failed"
-        ERROR_MSG="rsfetch --version returned non-zero"
+        ERROR_MSG="blaeckfetch --version returned non-zero"
         render_ui
         exit 1
     fi
@@ -343,7 +343,7 @@ main() {
     local final_lines=14  # base: header(3) + steps(5) + box(4) + padding(2)
     if [[ -z "$EXISTING_VERSION" ]]; then
         final_lines=24  # fresh install: get started + config + more
-    elif [[ "$EXISTING_VERSION" != "rsfetch $VERSION" ]]; then
+    elif [[ "$EXISTING_VERSION" != "blaeckfetch $VERSION" ]]; then
         final_lines=17  # update: what's new link
     fi
     local in_path=0

@@ -1,24 +1,24 @@
 # Community Posts
 
-Prepared posts for distribution. Ready to publish once name resolution is complete.
+Prepared posts for distribution. Name has been resolved to "blaeckfetch".
 
 ---
 
 ## Show HN (news.ycombinator.com)
 
 **Title:**
-Show HN: rsfetch – System fetch tool 57x faster than neofetch, with retro boot mode
+Show HN: blaeckfetch – System fetch tool 57x faster than neofetch, with retro splash mode
 
 **Body:**
-I built rsfetch as a faster alternative to neofetch with a unique feature: a retro console-style boot animation mode.
+I built blaeckfetch as a faster alternative to neofetch with a unique feature: a retro console-style splash animation mode.
 
 Performance: ~7ms vs neofetch's ~400ms. Uses a boot-cycle cache for static fields (hostname, CPU model, etc.) and direct syscalls instead of subprocess spawning.
 
-The boot mode is what makes it different - procedural starfield with earth/moon, or use your own background image. It converts images to half-block terminal characters with full RGB color, and supports iTerm2's inline image protocol for full-resolution rendering.
+The splash mode is what makes it different - procedural starfield with earth/moon, or use your own background image. It converts images to half-block terminal characters with full RGB color, and supports iTerm2's inline image protocol for full-resolution rendering.
 
 Written in Rust, distributed via Homebrew and AUR. Currently working on getting it published to crates.io.
 
-Demo GIFs in the README: https://github.com/gustafeden/rsfetch
+Demo GIFs in the README: https://github.com/gustafeden/blaeckfetch
 
 Happy to answer questions about the implementation.
 
@@ -27,28 +27,28 @@ Happy to answer questions about the implementation.
 ## r/unixporn
 
 **Title:**
-[OC] rsfetch - neofetch alternative with retro boot animation mode
+[OC] blaeckfetch - neofetch alternative with retro splash animation mode
 
 **Body:**
-Built a system fetch tool with a unique boot mode that shows a procedural starfield (or custom background image) before displaying system info.
+Built a system fetch tool with a unique splash mode that shows a procedural starfield (or custom background image) before displaying system info.
 
 Features:
 - ~7ms execution time (57x faster than neofetch)
-- Retro console-style boot animation with starfield
+- Retro console-style splash animation with starfield
 - Custom background images with half-block rendering (▄▀█)
 - Configurable entrance/exit animations (slow/fast/instant)
 - Alignment options (left/center/right)
 - iTerm2 inline image support for full-resolution backgrounds
 
-The boot animation is what makes it different - no other fetch tool has this. Perfect for terminal startup splash screens.
+The splash animation is what makes it different - no other fetch tool has this. Perfect for terminal startup splash screens.
 
 Install:
 ```
-brew tap gustafeden/tap && brew install rsfetch   # macOS
-yay -S rsfetch-gustafeden-bin                     # Arch Linux
+brew tap gustafeden/tap && brew install blaeckfetch   # macOS
+yay -S blaeckfetch-bin                                # Arch Linux
 ```
 
-Demo: https://github.com/gustafeden/rsfetch
+Demo: https://github.com/gustafeden/blaeckfetch
 
 [Image: demo/boot.gif]
 [Image: demo/boot-image.gif]
@@ -59,10 +59,10 @@ Demo: https://github.com/gustafeden/rsfetch
 ## r/rust
 
 **Title:**
-rsfetch: Built a neofetch alternative 57x faster, with procedural starfield boot mode
+blaeckfetch: Built a neofetch alternative 57x faster, with procedural starfield splash mode
 
 **Body:**
-I built rsfetch as a faster alternative to neofetch, with a unique retro boot animation mode.
+I built blaeckfetch as a faster alternative to neofetch, with a unique retro splash animation mode.
 
 **Performance:**
 - ~7ms vs neofetch's ~400ms (57x faster)
@@ -82,7 +82,7 @@ Boot animation mode - no other fetch tool has this. Shows a procedural starfield
 
 Distributed via Homebrew and AUR. Working on crates.io publishing.
 
-Repo: https://github.com/gustafeden/rsfetch
+Repo: https://github.com/gustafeden/blaeckfetch
 
 Built this to learn more about terminal rendering and syscall optimization. Happy to answer questions about the implementation.
 
@@ -91,28 +91,28 @@ Built this to learn more about terminal rendering and syscall optimization. Happ
 ## X/Twitter
 
 **Option 1 (visual focus):**
-Built rsfetch - a system fetch tool that's 57x faster than neofetch ⚡
+Built blaeckfetch - a system fetch tool that's 57x faster than neofetch ⚡
 
-The unique part: retro boot mode with procedural starfield 🌟
+The unique part: retro splash mode with procedural starfield 🌟
 
 Written in Rust. ~7ms execution time.
 
 [GIF: demo/boot.gif]
 
-https://github.com/gustafeden/rsfetch
+https://github.com/gustafeden/blaeckfetch
 
 **Option 2 (performance focus):**
 neofetch: ~400ms ❌
-rsfetch: ~7ms ✅
+blaeckfetch: ~7ms ✅
 
-57x faster system fetch tool in Rust, with a retro console boot animation mode 🚀
+57x faster system fetch tool in Rust, with a retro console splash animation mode 🚀
 
 [GIF: demo/boot-image.gif]
 
-https://github.com/gustafeden/rsfetch
+https://github.com/gustafeden/blaeckfetch
 
 **Option 3 (demo focus):**
-Built a neofetch alternative with a retro boot mode 🌟
+Built a neofetch alternative with a retro splash mode 🌟
 
 Check out the procedural starfield animation:
 
@@ -120,14 +120,14 @@ Check out the procedural starfield animation:
 
 57x faster • Rust • Custom backgrounds • ~7ms runtime
 
-https://github.com/gustafeden/rsfetch
+https://github.com/gustafeden/blaeckfetch
 
 ---
 
 ## Future Posts
 
 ### r/commandline
-**Title:** rsfetch - Fast system fetch with retro boot animation (neofetch alternative)
+**Title:** blaeckfetch - Fast system fetch with retro splash animation (neofetch alternative)
 
 **Body:** [Similar to r/rust but less technical, focus on practical usage and comparison with other fetch tools like fastfetch]
 
@@ -137,7 +137,7 @@ https://github.com/gustafeden/rsfetch
 **Topics to cover:**
 - Why neofetch is slow (shell script, subprocess spawning)
 - Optimization strategies (boot-cycle cache, direct syscalls)
-- Building the boot animation system
+- Building the splash animation system
 - Image-to-terminal conversion algorithm
 - Terminal rendering with blaeck
 - Benchmarking and profiling results

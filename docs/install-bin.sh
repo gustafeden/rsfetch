@@ -1,12 +1,12 @@
 #!/bin/sh
 set -e
 
-# rsfetch installer bootstrap (Rust binary installer)
+# blaeckfetch installer bootstrap (Rust binary installer)
 # Downloads the blaeck-powered Rust installer binary and runs it.
-# Usage: curl -fsSL https://gustafeden.github.io/rsfetch/install-bin.sh | sh
+# Usage: curl -fsSL https://gustafeden.github.io/blaeckfetch/install-bin.sh | sh
 
-REPO="gustafeden/rsfetch"
-INSTALLER_NAME="rsfetch-installer"
+REPO="gustafeden/blaeckfetch"
+INSTALLER_NAME="blaeckfetch-installer"
 
 say() {
     printf '%s\n' "$1"
@@ -75,7 +75,7 @@ main() {
     detect_platform
     get_version
 
-    say "rsfetch installer — ${OS_LABEL} ${ARCH_LABEL}"
+    say "blaeckfetch installer — ${OS_LABEL} ${ARCH_LABEL}"
     say ""
 
     URL="https://github.com/${REPO}/releases/download/v${VERSION}/${INSTALLER_NAME}-${TARGET}.tar.gz"

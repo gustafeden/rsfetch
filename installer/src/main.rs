@@ -53,7 +53,7 @@ fn resolve_install_dir() -> PathBuf {
 }
 
 fn is_writable(path: &PathBuf) -> bool {
-    let test = path.join(".rsfetch_write_test");
+    let test = path.join(".blaeckfetch_write_test");
     if fs::write(&test, b"").is_ok() {
         let _ = fs::remove_file(&test);
         true
@@ -104,7 +104,7 @@ enum InstallScenario {
 }
 
 fn detect_existing() -> Option<String> {
-    Command::new("rsfetch")
+    Command::new("blaeckfetch")
         .arg("--version")
         .output()
         .ok()
@@ -156,7 +156,7 @@ fn build_ui(state: &InstallerState, spinner_frame: usize) -> Element {
 
     // Header
     rows.push(element! {
-        Text(content: format!("  rsfetch installer v{}", VERSION), bold: true, color: Color::White)
+        Text(content: format!("  blaeckfetch installer v{}", VERSION), bold: true, color: Color::White)
     });
     rows.push(element! {
         Text(content: "  \u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}\u{2500}", dim: true)
@@ -200,7 +200,7 @@ fn build_ui(state: &InstallerState, spinner_frame: usize) -> Element {
     if state.finished && state.error.is_none() {
         let scenario = match &state.existing_version {
             None => InstallScenario::Fresh,
-            Some(old) if old != &format!("rsfetch {}", VERSION) => {
+            Some(old) if old != &format!("blaeckfetch {}", VERSION) => {
                 InstallScenario::Update { old_version: old.clone() }
             }
             Some(_) => InstallScenario::Reinstall,
@@ -218,12 +218,12 @@ fn build_ui(state: &InstallerState, spinner_frame: usize) -> Element {
         match &scenario {
             InstallScenario::Fresh => {
                 rows.push(element! {
-                    Text(content: box_line(&format!("\u{2713} rsfetch v{} installed", VERSION)), color: Color::Green)
+                    Text(content: box_line(&format!("\u{2713} blaeckfetch v{} installed", VERSION)), color: Color::Green)
                 });
             }
             InstallScenario::Update { old_version } => {
                 rows.push(element! {
-                    Text(content: box_line("\u{2713} rsfetch updated"), color: Color::Green)
+                    Text(content: box_line("\u{2713} blaeckfetch updated"), color: Color::Green)
                 });
                 rows.push(element! {
                     Text(content: box_line(&format!("  {} \u{2192} v{}", old_version, VERSION)), color: Color::Green)
@@ -231,7 +231,7 @@ fn build_ui(state: &InstallerState, spinner_frame: usize) -> Element {
             }
             InstallScenario::Reinstall => {
                 rows.push(element! {
-                    Text(content: box_line(&format!("\u{2713} rsfetch v{} reinstalled", VERSION)), color: Color::Green)
+                    Text(content: box_line(&format!("\u{2713} blaeckfetch v{} reinstalled", VERSION)), color: Color::Green)
                 });
             }
         }
@@ -275,29 +275,29 @@ fn build_ui(state: &InstallerState, spinner_frame: usize) -> Element {
             });
             rows.push(element! {
                 Box(flex_direction: FlexDirection::Row) {
-                    Text(content: "    rsfetch")
+                    Text(content: "    blaeckfetch")
                     Text(content: "                     run it", dim: true)
                 }
             });
             rows.push(element! {
                 Box(flex_direction: FlexDirection::Row) {
-                    Text(content: "    rsfetch -c cyan")
+                    Text(content: "    blaeckfetch -c cyan")
                     Text(content: "             try a color theme", dim: true)
                 }
             });
             rows.push(element! {
                 Box(flex_direction: FlexDirection::Row) {
-                    Text(content: "    rsfetch --help")
+                    Text(content: "    blaeckfetch --help")
                     Text(content: "              see all options", dim: true)
                 }
             });
 
             rows.push(element! { Text(content: "") });
             rows.push(element! {
-                Text(content: "  Config: rsfetch --print-config > ~/.config/rsfetch/config.toml", dim: true)
+                Text(content: "  Config: blaeckfetch --print-config > ~/.config/blaeckfetch/config.toml", dim: true)
             });
             rows.push(element! {
-                Text(content: "  More:   https://github.com/gustafeden/rsfetch", color: Color::Cyan, dim: true)
+                Text(content: "  More:   https://github.com/gustafeden/blaeckfetch", color: Color::Cyan, dim: true)
             });
         }
 
@@ -307,7 +307,7 @@ fn build_ui(state: &InstallerState, spinner_frame: usize) -> Element {
             rows.push(element! {
                 Box(flex_direction: FlexDirection::Row) {
                     Text(content: "  What's new: ", dim: true)
-                    Text(content: format!("https://github.com/gustafeden/rsfetch/releases/tag/v{}", VERSION), color: Color::Cyan)
+                    Text(content: format!("https://github.com/gustafeden/blaeckfetch/releases/tag/v{}", VERSION), color: Color::Cyan)
                 }
             });
         }
@@ -357,8 +357,8 @@ fn extract_binary(tarball: &[u8], install_dir: &PathBuf) -> Result<PathBuf, Stri
             .to_string_lossy()
             .to_string();
 
-        if name == "rsfetch" {
-            let dest = install_dir.join("rsfetch");
+        if name == "blaeckfetch" {
+            let dest = install_dir.join("blaeckfetch");
             let mut file = fs::File::create(&dest).map_err(|e| format!("write error: {}", e))?;
             io::copy(&mut entry, &mut file).map_err(|e| format!("copy error: {}", e))?;
             fs::set_permissions(&dest, fs::Permissions::from_mode(0o755))
@@ -366,7 +366,7 @@ fn extract_binary(tarball: &[u8], install_dir: &PathBuf) -> Result<PathBuf, Stri
             return Ok(dest);
         }
     }
-    Err("rsfetch binary not found in archive".to_string())
+    Err("blaeckfetch binary not found in archive".to_string())
 }
 
 fn verify(binary_path: &PathBuf) -> Result<String, String> {
@@ -377,7 +377,7 @@ fn verify(binary_path: &PathBuf) -> Result<String, String> {
     if output.status.success() {
         Ok(String::from_utf8_lossy(&output.stdout).trim().to_string())
     } else {
-        Err("rsfetch --version returned non-zero".to_string())
+        Err("blaeckfetch --version returned non-zero".to_string())
     }
 }
 
@@ -401,7 +401,7 @@ fn main() -> io::Result<()> {
     state.set_active(2);
     let target = target_triple();
     let url = format!(
-        "https://github.com/gustafeden/rsfetch/releases/download/v{}/rsfetch-{}.tar.gz",
+        "https://github.com/gustafeden/blaeckfetch/releases/download/v{}/blaeckfetch-{}.tar.gz",
         VERSION, target
     );
 
@@ -419,7 +419,7 @@ fn main() -> io::Result<()> {
             let size_mb = bytes.len() as f64 / 1_048_576.0;
             state.set_done(
                 2,
-                format!("rsfetch v{} ({:.1} MB)", VERSION, size_mb),
+                format!("blaeckfetch v{} ({:.1} MB)", VERSION, size_mb),
             );
             bytes
         }

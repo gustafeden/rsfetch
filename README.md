@@ -1,38 +1,74 @@
-# rsfetch
+# blaeckfetch
 
-A fast system fetch display for your terminal, written in Rust. Powered by [blaeck](https://github.com/gustafeden/blaeck) for rendering.
+A fast, minimalist system fetch for your terminal. Written in Rust. Powered by [blaeck](https://github.com/gustafeden/blaeck) for rendering.
+
+## Default mode
+
+![blaeckfetch default](demo/default.gif)
+
+Clean moon logo with essential system info. Shows OS, Kernel, Uptime, Shell, CPU, and Memory by default — no palette, no clutter.
+
+Everything is customizable:
+
+```toml
+# Use any logo
+logo = "arch"                          # built-in: apple, linux, ubuntu, arch, debian, fedora, moon
+logo_file = "~/.config/blaeckfetch/logo.txt"  # or your own ASCII art
+
+# Pick your fields
+fields = ["OS", "CPU", "GPU", "Memory", "Disk (/)", "Local IP"]
+
+# Show the color palette
+palette = true
+
+# Change colors
+color = "cyan"
+
+[colors]
+title = [255, 165, 0]
+label = "cyan"
+separator = "dark_gray"
+logo = "magenta"
+
+# Rename fields
+[labels]
+"Disk (/)" = "Disk"
+"Local IP" = "IP"
+```
+
+Available fields: `OS`, `Host`, `Kernel`, `Uptime`, `Packages`, `Shell`, `Resolution`, `DE`, `WM`, `WM Theme`, `Terminal`, `CPU`, `GPU`, `Memory`, `Disk (/)`, `Local IP`
+
+Available colors: `green`, `cyan`, `red`, `magenta`, `yellow`, `blue`, `mono` — or use RGB arrays like `[255, 165, 0]`
+
+## Splash mode
+
+Launch blaeckfetch with an animated starfield background — a retro console-inspired splash screen.
+
+![splash — background image](demo/splash-image.gif)
+
+Use a custom background image (PNG/JPEG) or the procedural starfield with earth and moon. Press any key to dismiss, or it auto-closes after the configured timeout. Perfect for shell startup animations.
 
 ## Performance
 
 | Tool | Time |
 |------|------|
-| **rsfetch** | **~7ms** |
+| **blaeckfetch** | **~7ms** |
 | neofetch | ~400ms |
 
 ~57x faster than neofetch. Uses a boot-cycle cache for static fields — first run after reboot is ~40ms, every run after that is ~7ms.
-
-## Output
-
-![rsfetch](demo/fetch.gif)
-
-### Boot mode
-
-![boot — procedural starfield](demo/boot.gif)
-
-![boot — background image](demo/boot-image.gif)
 
 ## Install
 
 ### macOS
 
 ```sh
-brew tap gustafeden/tap && brew install rsfetch
+brew tap gustafeden/tap && brew install blaeckfetch
 ```
 
 ### Arch Linux
 
 ```sh
-yay -S rsfetch-gustafeden-bin
+yay -S blaeckfetch-bin
 ```
 
 ### Linux / macOS (installer script)
@@ -40,7 +76,7 @@ yay -S rsfetch-gustafeden-bin
 No Rust required — prebuilt binaries for macOS and Linux:
 
 ```sh
-curl -fsSL https://gustafeden.github.io/rsfetch/install.sh | bash
+curl -fsSL https://gustafeden.github.io/blaeckfetch/install.sh | bash
 ```
 
 Supports macOS (Intel + Apple Silicon) and Linux (x86_64 + aarch64). Downloads a prebuilt binary to `~/.local/bin` (or the first writable directory in your `$PATH` under `$HOME`).
@@ -48,28 +84,28 @@ Supports macOS (Intel + Apple Silicon) and Linux (x86_64 + aarch64). Downloads a
 To install a specific version:
 
 ```sh
-RSFETCH_VERSION=0.3.0 curl -fsSL https://gustafeden.github.io/rsfetch/install.sh | bash
+BLAECKFETCH_VERSION=0.3.0 curl -fsSL https://gustafeden.github.io/blaeckfetch/install.sh | bash
 ```
 
 ### From source
 
 ```sh
-git clone https://github.com/gustafeden/rsfetch
-cd rsfetch
+git clone https://github.com/gustafeden/blaeckfetch
+cd blaeckfetch
 cargo build --release
-./target/release/rsfetch
+./target/release/blaeckfetch
 ```
 
 Or with cargo:
 
 ```sh
-cargo install --git https://github.com/gustafeden/rsfetch
+cargo install --git https://github.com/gustafeden/blaeckfetch
 ```
 
 ## Usage
 
 ```
-rsfetch [OPTIONS]
+blaeckfetch [OPTIONS]
 
 Options:
   -c, --color <COLOR>    Color theme (green, cyan, red, magenta, yellow, blue, mono)
@@ -80,10 +116,12 @@ Options:
       --clear-cache      Clear the cache and re-gather all info
       --config <PATH>    Path to config file
       --print-config     Print default config to stdout
-      --boot             Boot sequence mode (retro console animation)
-      --left             Boot screen alignment: left (default)
-      --center           Boot screen alignment: center
-      --right            Boot screen alignment: right
+      --mode <MODE>      Display mode (default, neofetch, splash)
+      --splash           Splash screen mode (retro console animation)
+      --neofetch         Neofetch-style layout (homage mode)
+      --left             Splash screen alignment: left (default)
+      --center           Splash screen alignment: center
+      --right            Splash screen alignment: right
       --animate          Animate the logo (color cycling)
   -h, --help             Print help
   -V, --version          Print version
@@ -96,8 +134,8 @@ CLI flags override config file values.
 `green` (default), `cyan`, `red`, `magenta`, `yellow`, `blue`, `mono`
 
 ```sh
-rsfetch -c cyan
-rsfetch -c red
+blaeckfetch -c cyan
+blaeckfetch -c red
 ```
 
 ### Logos
@@ -107,8 +145,8 @@ Auto-detected by OS. Override with `--logo`:
 `apple`, `linux`, `ubuntu`, `arch`, `debian`, `fedora`, `none`
 
 ```sh
-rsfetch --logo arch
-rsfetch --no-logo
+blaeckfetch --logo arch
+blaeckfetch --no-logo
 ```
 
 ### Custom ASCII art
@@ -116,46 +154,46 @@ rsfetch --no-logo
 Use any text file as a logo:
 
 ```sh
-rsfetch --logo-file ~/my-logo.txt
+blaeckfetch --logo-file ~/my-logo.txt
 ```
 
 Or set it in the config:
 
 ```toml
-logo_file = "~/.config/rsfetch/logo.txt"
+logo_file = "~/.config/blaeckfetch/logo.txt"
 ```
 
-### Boot mode
+### Splash mode
 
-A retro console-inspired boot animation. Shows a starfield with earth and moon by default, or a custom background image. Press any key to dismiss, or it auto-closes after the configured timeout.
+A retro console-inspired splash animation. Shows a starfield with earth and moon by default, or a custom background image. Press any key to dismiss, or it auto-closes after the configured timeout.
 
 ```sh
-rsfetch --boot
-rsfetch --boot --center
+blaeckfetch --splash
+blaeckfetch --splash --center
 ```
 
 Add it to your shell RC file (`.zshrc`, `.bashrc`) for a startup splash.
 
 #### Background image
 
-Point `[boot] image` at a PNG or JPEG to use it as the background. Images are converted to half-block characters (`▄▀█`) with full RGB color — every cell packs two vertical pixels using foreground and background colors. The conversion is pure Rust with no external tools. Three stretch modes control how the image fits the canvas: `fill` stretches to fit, `fit` letterboxes to preserve aspect ratio, `crop` fills and trims the edges.
+Point `[splash] image` at a PNG or JPEG to use it as the background. Images are converted to half-block characters (`▄▀█`) with full RGB color — every cell packs two vertical pixels using foreground and background colors. The conversion is pure Rust with no external tools. Three stretch modes control how the image fits the canvas: `fill` stretches to fit, `fit` letterboxes to preserve aspect ratio, `crop` fills and trims the edges.
 
 ```toml
-[boot]
-image = "~/.config/rsfetch/space.png"
+[splash]
+image = "~/.config/blaeckfetch/space.png"
 stretch = "fill"        # fill, fit, or crop
 ```
 
-Without an image, rsfetch renders a procedural starfield with earth and moon.
+Without an image, blaeckfetch renders a procedural starfield with earth and moon.
 
 #### Full-resolution image mode
 
-Terminals that support inline images (iTerm2, WezTerm, Ghostty, kitty) can render the background at full pixel resolution instead of half-block ASCII. rsfetch auto-detects this — no config needed.
+Terminals that support inline images (iTerm2, WezTerm, Ghostty, kitty) can render the background at full pixel resolution instead of half-block ASCII. blaeckfetch auto-detects this — no config needed.
 
 To force a specific mode:
 
 ```toml
-[boot]
+[splash]
 render_mode = "image"   # force inline image (iTerm2 protocol)
 render_mode = "ascii"   # force half-block characters
 render_mode = "auto"    # auto-detect (default)
@@ -166,7 +204,7 @@ Limitations:
 - Image resizes on terminal resize may briefly flicker.
 - VHS and screen recorders capture the half-block fallback, not the inline image.
 
-#### Boot config reference
+#### Splash config reference
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
@@ -185,18 +223,36 @@ Limitations:
 | `entrance` | string | `"slow"` | Entrance animation: `slow` (~1.2s), `fast` (~400ms), `instant` |
 | `exit` | string | `"slow"` | Exit animation: `slow` (~400ms), `fast` (~200ms), `instant` |
 
+Note: The config section name `[boot]` still works as an alias for `[splash]` for backward compatibility.
+
+### Neofetch mode
+
+An homage to the classic neofetch layout. Run with `--neofetch` or `--mode neofetch` for the traditional side-by-side logo + info display:
+
+```sh
+blaeckfetch --neofetch
+```
+
+Or set it in your config:
+
+```toml
+mode = "neofetch"
+```
+
+blaeckfetch started as a fast alternative to neofetch, and this mode preserves that layout. The default mode has since evolved into its own minimal identity.
+
 ### JSON output
 
 ```sh
-rsfetch --json
+blaeckfetch --json
 ```
 
 ### Configuration
 
-rsfetch loads config from `~/.config/rsfetch/config.toml`. Generate a default config:
+blaeckfetch loads config from `~/.config/blaeckfetch/config.toml`. Generate a default config:
 
 ```sh
-rsfetch --print-config > ~/.config/rsfetch/config.toml
+blaeckfetch --print-config > ~/.config/blaeckfetch/config.toml
 ```
 
 Example config:
@@ -230,6 +286,7 @@ Config options:
 
 | Key | Type | Description |
 |-----|------|-------------|
+| `mode` | string | Display mode: `"default"`, `"neofetch"`, `"splash"` |
 | `color` | string | Color theme name |
 | `logo` | string | Logo name or `"auto"` |
 | `logo_file` | string | Path to custom ASCII art file |
@@ -269,7 +326,7 @@ Color values can be a named color (`"cyan"`, `"light_red"`, etc.) or an RGB arra
 
 - Compiled Rust binary — no interpreter startup
 - Direct syscalls for host model, disk stats, display resolution (no subprocess spawning)
-- Boot-cycle cache (`~/.cache/rsfetch/cache`) for fields that don't change between reboots
+- Boot-cycle cache (`~/.cache/blaeckfetch/cache`) for fields that don't change between reboots
 - Only two subprocess calls on macOS (`defaults read` for theme), and those are cached
 - sysinfo crate for memory/CPU instead of parsing command output
 
@@ -278,7 +335,7 @@ Color values can be a named color (`"cyan"`, `"light_red"`, etc.) or an RGB arra
 - [blaeck](https://github.com/gustafeden/blaeck) — inline terminal UI framework
 - [sysinfo](https://crates.io/crates/sysinfo) — cross-platform system information
 - [clap](https://crates.io/crates/clap) — CLI argument parsing
-- [image](https://crates.io/crates/image) — image loading and processing (boot mode backgrounds)
+- [image](https://crates.io/crates/image) — image loading and processing (splash mode backgrounds)
 
 ## Releasing
 

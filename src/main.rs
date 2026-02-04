@@ -5,16 +5,18 @@ mod color;
 mod config;
 mod info;
 mod logo;
+mod mode;
 mod render;
 
 use clap::Parser;
 use color::Theme;
 use config::Config;
 use info::SystemInfo;
+use mode::Mode;
 
 /// A fast system fetch display, written in Rust.
 #[derive(Parser)]
-#[command(name = "rsfetch", version, about)]
+#[command(name = "blaeckfetch", version, about)]
 struct Args {
     /// Color theme (green, cyan, red, magenta, yellow, blue, mono)
     #[arg(short, long)]
@@ -52,19 +54,31 @@ struct Args {
     #[arg(long)]
     animate: bool,
 
-    /// Boot sequence mode (retro console inspired)
+    /// Display mode (default, neofetch, splash)
     #[arg(long)]
+    mode: Option<String>,
+
+    /// Use neofetch mode (auto OS logo + all fields)
+    #[arg(long)]
+    neofetch: bool,
+
+    /// Splash mode (fullscreen retro console animation)
+    #[arg(long)]
+    splash: bool,
+
+    /// Alias for --splash (hidden)
+    #[arg(long, hide = true)]
     boot: bool,
 
-    /// Boot screen alignment: left (default)
+    /// Splash screen alignment: left (default)
     #[arg(long)]
     left: bool,
 
-    /// Boot screen alignment: center
+    /// Splash screen alignment: center
     #[arg(long)]
     center: bool,
 
-    /// Boot screen alignment: right
+    /// Splash screen alignment: right
     #[arg(long)]
     right: bool,
 }
@@ -114,6 +128,23 @@ fn main() -> std::io::Result<()> {
         }
     }
 
+    // Resolve mode: shorthand flags > --mode > config > Default
+    let mode = if args.neofetch {
+        Mode::Neofetch
+    } else if args.splash || args.boot {
+        Mode::Splash
+    } else if let Some(ref mode_str) = args.mode {
+        Mode::from_str(mode_str).unwrap_or_else(|| {
+            eprintln!("warning: unknown mode '{}', using 'default'", mode_str);
+            Mode::Default
+        })
+    } else if let Some(ref mode_str) = cfg.mode {
+        Mode::from_str(mode_str).unwrap_or(Mode::Default)
+    } else {
+        Mode::Default
+    };
+
+    // Resolve logo (mode-aware)
     let logo_file = args.logo_file.or(cfg.logo_file.clone());
 
     let logo_art = if args.no_logo {
@@ -127,13 +158,18 @@ fn main() -> std::io::Result<()> {
         let logo_name = args.logo.or(cfg.logo.clone());
         match logo_name.as_deref() {
             Some("none" | "off") => String::new(),
-            Some("auto") | None => logo::detect().art.to_string(),
+            Some("auto") => logo::detect().art.to_string(),
             Some(name) => logo::by_name(name).art.to_string(),
+            None => match mode {
+                Mode::Default => String::new(), // render.rs builds the colored moon element
+                Mode::Neofetch => logo::detect().art.to_string(),
+                Mode::Splash => String::new(), // splash has its own rendering
+            },
         }
     };
 
-    if args.boot {
-        let boot_cfg = cfg.boot.as_ref();
+    if mode == Mode::Splash {
+        let boot_cfg = cfg.splash_config();
 
         // Resolve alignment: CLI flags win, then config, then default "left"
         let align = if args.center {
@@ -181,6 +217,9 @@ fn main() -> std::io::Result<()> {
                 boot::background::image_cell_size_for_proto(img_path, cpw, cph)
                     .map(|(cw, ch)| boot::background::fit_to_terminal_with_chrome(cw, ch, term_w, term_h, 2, 6))
                     .unwrap_or((68, 23))
+            } else if render_mode == boot::image_proto::RenderMode::Inline {
+                // Inline mode (VHS): use fixed defaults since terminal_size() may be unreliable
+                (68, 23)
             } else {
                 boot::background::image_dimensions(img_path).unwrap_or((68, 23))
             };
@@ -225,6 +264,14 @@ fn main() -> std::io::Result<()> {
         } else {
             None
         };
+        // Inline mode: simple output for terminals without raw mode (VHS, etc.)
+        if render_mode == boot::image_proto::RenderMode::Inline {
+            let w = boot_w.unwrap_or(68);
+            let h = boot_h.unwrap_or(23);
+            boot::run_inline(&info, bg, w, h);
+            return Ok(());
+        }
+
         let entrance = boot_cfg.and_then(|b| b.entrance.as_deref()).unwrap_or("slow");
         let exit = boot_cfg.and_then(|b| b.exit.as_deref()).unwrap_or("slow");
         boot::run(&info, centered, right_aligned, bg, raw_image, render_mode, boot_w, boot_h, timeout, image_source, image_cell_size, (min_w, min_h), (max_w, max_h), entrance, exit);
@@ -232,8 +279,8 @@ fn main() -> std::io::Result<()> {
     }
 
     if args.animate {
-        render::render_animated(&info, &logo_art, &theme, &cfg)
+        render::render_animated(&info, &logo_art, &theme, &cfg, mode)
     } else {
-        render::render(&info, &logo_art, &theme, &cfg)
+        render::render(&info, &logo_art, &theme, &cfg, mode)
     }
 }

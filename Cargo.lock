@@ -143,6 +143,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "blaeckfetch"
+version = "0.3.0"
+dependencies = [
+ "base64",
+ "blaeck",
+ "clap",
+ "image",
+ "libc",
+ "serde",
+ "serde_json",
+ "sysinfo",
+ "toml",
+]
+
+[[package]]
 name = "bytemuck"
 version = "1.24.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -719,21 +734,6 @@ name = "regex-syntax"
 version = "0.8.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7a2d987857b319362043e95f5353c0535c1f58eec5336fdfcf626430af7def58"
-
-[[package]]
-name = "rsfetch"
-version = "0.3.0"
-dependencies = [
- "base64",
- "blaeck",
- "clap",
- "image",
- "libc",
- "serde",
- "serde_json",
- "sysinfo",
- "toml",
-]
 
 [[package]]
 name = "rustc_version"

@@ -61,10 +61,10 @@ fn cache_path() -> PathBuf {
     if let Ok(home) = std::env::var("HOME") {
         PathBuf::from(home)
             .join(".cache")
-            .join("rsfetch")
+            .join("blaeckfetch")
             .join("cache")
     } else {
-        PathBuf::from("/tmp/rsfetch-cache")
+        PathBuf::from("/tmp/blaeckfetch-cache")
     }
 }
 

@@ -1,10 +1,10 @@
 [package]
-name = "rsfetch"
+name = "blaeckfetch"
 version = "0.3.0"
 edition = "2021"
 description = "A fast system fetch display for your terminal"
 license = "MIT"
-repository = "https://github.com/gustafeden/rsfetch"
+repository = "https://github.com/gustafeden/blaeckfetch"
 keywords = ["neofetch", "system", "fetch", "terminal", "cli"]
 categories = ["command-line-utilities"]
 

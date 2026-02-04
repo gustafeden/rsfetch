@@ -41,9 +41,9 @@ jobs:
         if: matrix.cross
         run: cargo install cross --git https://github.com/cross-rs/cross
 
-      # --- Build rsfetch ---
+      # --- Build blaeckfetch ---
 
-      - name: Build rsfetch
+      - name: Build blaeckfetch
         run: |
           if [ "${{ matrix.cross }}" = "true" ]; then
             cross build --release --target ${{ matrix.target }}
@@ -51,14 +51,14 @@ jobs:
             cargo build --release --target ${{ matrix.target }}
           fi
 
-      - name: Strip rsfetch
+      - name: Strip blaeckfetch
         if: "!matrix.cross"
-        run: strip target/${{ matrix.target }}/release/rsfetch
+        run: strip target/${{ matrix.target }}/release/blaeckfetch
 
-      - name: Package rsfetch
+      - name: Package blaeckfetch
         run: |
           cd target/${{ matrix.target }}/release
-          tar czf ../../../rsfetch-${{ matrix.target }}.tar.gz rsfetch
+          tar czf ../../../blaeckfetch-${{ matrix.target }}.tar.gz blaeckfetch
           cd ../../..
 
       # --- Build installer ---
@@ -74,12 +74,12 @@ jobs:
 
       - name: Strip installer
         if: "!matrix.cross"
-        run: strip installer/target/${{ matrix.target }}/release/rsfetch-installer
+        run: strip installer/target/${{ matrix.target }}/release/blaeckfetch-installer
 
       - name: Package installer
         run: |
           cd installer/target/${{ matrix.target }}/release
-          tar czf ../../../../rsfetch-installer-${{ matrix.target }}.tar.gz rsfetch-installer
+          tar czf ../../../../blaeckfetch-installer-${{ matrix.target }}.tar.gz blaeckfetch-installer
           cd ../../../..
 
       # --- Upload ---
@@ -89,8 +89,8 @@ jobs:
         with:
           name: binaries-${{ matrix.target }}
           path: |
-            rsfetch-${{ matrix.target }}.tar.gz
-            rsfetch-installer-${{ matrix.target }}.tar.gz
+            blaeckfetch-${{ matrix.target }}.tar.gz
+            blaeckfetch-installer-${{ matrix.target }}.tar.gz
 
   release:
     needs: build

@@ -1,6 +1,6 @@
 # Distribution & Visibility
 
-How to get rsfetch in front of people.
+How to get blaeckfetch in front of people.
 
 ## Demo GIFs
 
@@ -20,36 +20,32 @@ Output goes to `demo/` as `.gif` files. Embed in README.
 
 - [x] Create `github.com/gustafeden/homebrew-tap` repo
 - [x] Add formula that downloads release binary from GitHub
-- [x] Users install with: `brew tap gustafeden/tap && brew install rsfetch`
-- [ ] Once adoption grows, submit to homebrew-core for `brew install rsfetch`
+- [x] Users install with: `brew tap gustafeden/tap && brew install blaeckfetch`
+- [ ] Once adoption grows, submit to homebrew-core for `brew install blaeckfetch`
 
 ### AUR (Arch Linux)
 
 - [x] Create `PKGBUILD` for AUR
-- [x] Submit as `rsfetch-gustafeden-bin` (binary package)
-- [x] Users install with: `yay -S rsfetch-gustafeden-bin`
-- [x] Deletion request submitted for abandoned `rsfetch-bin` package (awaiting approval)
-- [ ] Once approved: migrate to `rsfetch-bin` for cleaner name
+- [x] Submit as `blaeckfetch-bin` (binary package)
+- [x] Users install with: `yay -S blaeckfetch-bin`
 
 ### crates.io
 
 - [x] Already have metadata in Cargo.toml (license, repo, keywords, categories)
 - [x] Switched to crates.io version of blaeck (was git dependency)
-- [x] Transfer request submitted to current owner - [Issue #7](https://github.com/Phate6660/rsfetch/issues/7)
-- [ ] Once transfer approved: `cargo publish` — lets Rust users `cargo install rsfetch`
-- [ ] Alternative: publish as `bootfetch` or `rsfetch-new` if transfer denied
+- [ ] Publish as `blaeckfetch` on crates.io — lets Rust users `cargo install blaeckfetch`
 
 ## GitHub Discoverability
 
 - [x] Add repo topics: `neofetch`, `fastfetch`, `system-info`, `fetch`, `terminal`, `rust`, `cli`
 - [x] Add GIFs to README (the boot mode is the differentiator)
-- [x] Submit PR to [awesome-fetch](https://github.com/beucismis/awesome-fetch) - [PR #188](https://github.com/beucismis/awesome-fetch/pull/188)
+- [x] Submit PR to [awesome-fetch](https://github.com/beucismis/awesome-fetch) as blaeckfetch - [PR #188](https://github.com/beucismis/awesome-fetch/pull/188)
 
 ## Community Posts
 
-**Ready to post** (prepared in `POSTS.md`, waiting for name resolution [Issue #7](https://github.com/Phate6660/rsfetch/issues/7)):
+**Ready to post** (prepared in `POSTS.md`):
 
-- [ ] Show HN — "rsfetch – 57x faster than neofetch, with retro boot mode"
+- [ ] Show HN — "blaeckfetch – 57x faster than neofetch, with retro boot mode"
 - [ ] r/unixporn — boot mode screenshots/GIFs
 - [ ] r/rust — technical post about performance + unique features
 - [ ] X/Twitter — short demo with GIF
