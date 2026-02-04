@@ -4,7 +4,7 @@ A fast, minimalist system fetch for your terminal. Written in Rust. Powered by [
 
 ## Default mode
 
-![blaeckfetch default](demo/default.gif)
+![blaeckfetch default](https://gustafeden.github.io/blaeckfetch/demo/default.gif)
 
 Clean moon logo with essential system info. Shows OS, Kernel, Uptime, Shell, CPU, and Memory by default — no palette, no clutter.
 
@@ -44,7 +44,7 @@ Available colors: `green`, `cyan`, `red`, `magenta`, `yellow`, `blue`, `mono` �
 
 Launch blaeckfetch with an animated starfield background — a retro console-inspired splash screen.
 
-![splash — background image](demo/splash-image.gif)
+![splash — background image](https://gustafeden.github.io/blaeckfetch/demo/splash-image.gif)
 
 Use a custom background image (PNG/JPEG) or the procedural starfield with earth and moon. Press any key to dismiss, or it auto-closes after the configured timeout. Perfect for shell startup animations.
 
