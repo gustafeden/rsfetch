@@ -42,18 +42,29 @@ pub fn run(
     max_size: (u16, u16),
     entrance: &str,
     exit: &str,
+    vhs_mode: bool,
 ) {
     use std::os::unix::io::AsRawFd;
 
-    let tty = match std::fs::OpenOptions::new()
-        .read(true)
-        .write(true)
-        .open("/dev/tty")
-    {
-        Ok(f) => f,
-        Err(_) => return,
-    };
-    let fd = tty.as_raw_fd();
+    // In VHS mode we skip /dev/tty and raw mode entirely — VHS handles ANSI
+    // cursor positioning but can't do raw mode keypress detection.
+    let fd: i32;
+    let _tty_handle: Option<std::fs::File>;
+    if !vhs_mode {
+        let tty = match std::fs::OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open("/dev/tty")
+        {
+            Ok(f) => f,
+            Err(_) => return,
+        };
+        fd = tty.as_raw_fd();
+        _tty_handle = Some(tty);
+    } else {
+        fd = -1;
+        _tty_handle = None;
+    }
 
     // Determine boot screen dimensions
     let base_bw = boot_w.unwrap_or(DEFAULT_WIDTH);
@@ -68,59 +79,73 @@ pub fn run(
 
     // Check terminal size
     let (term_width, term_height) = terminal_size();
-    if term_width < bw {
+    if !vhs_mode && term_width < bw {
         return; // terminal too narrow
     }
 
     let mut stdout = io::stdout();
 
-    // Reserve vertical space (content + top padding) by printing newlines.
-    let total_height = PAD_TOP + bh;
-    let reserve = total_height.min(term_height);
-    // Print reserve-1 newlines (cursor already occupies one row)
-    for _ in 0..reserve.saturating_sub(1) {
-        let _ = write!(stdout, "\n");
-    }
-    let _ = stdout.flush();
-
-    // Query cursor row via DSR (requires temporary raw mode for reading response)
-    let cursor_row = query_cursor_row(fd).unwrap_or(term_height);
-    let mut origin_row = if cursor_row >= reserve {
-        cursor_row - reserve + 1 + PAD_TOP
-    } else {
-        1 + PAD_TOP
-    };
-
-    // Clear the reserved lines (removes any shell prompt text to the left)
-    let clear_start = origin_row.saturating_sub(PAD_TOP);
-    for r in clear_start..origin_row + bh {
-        let _ = write!(stdout, "\x1b[{};1H\x1b[2K", r);
-    }
-    let _ = stdout.flush();
-
-    // Horizontal position: left-aligned with padding, centered, or right-aligned
-    let mut origin_col = if centered {
-        (term_width.saturating_sub(bw)) / 2 + 1
-    } else if right_aligned {
-        term_width.saturating_sub(bw).saturating_sub(PAD_LEFT) + 1
-    } else {
-        PAD_LEFT + 1
-    };
+    let mut origin_row: u16 = 1;
+    let mut origin_col: u16 = 1;
     let mut last_term_width = term_width;
     let mut last_term_height = term_height;
 
-    // Enter raw mode
-    let orig = unsafe {
-        let mut t: libc::termios = std::mem::zeroed();
-        if libc::tcgetattr(fd, &mut t) != 0 {
-            return;
+    if vhs_mode {
+        // VHS: start at top-left, no space reservation needed
+        origin_row = 1;
+        origin_col = 1;
+    } else {
+        // Reserve vertical space (content + top padding) by printing newlines.
+        let total_height = PAD_TOP + bh;
+        let reserve = total_height.min(term_height);
+        for _ in 0..reserve.saturating_sub(1) {
+            let _ = write!(stdout, "\n");
         }
-        let orig = t;
-        t.c_lflag &= !(libc::ICANON | libc::ECHO);
-        t.c_cc[libc::VMIN] = 0;
-        t.c_cc[libc::VTIME] = 0;
-        libc::tcsetattr(fd, libc::TCSANOW, &t);
-        orig
+        let _ = stdout.flush();
+
+        // Query cursor row via DSR (requires temporary raw mode for reading response)
+        let cursor_row = query_cursor_row(fd).unwrap_or(term_height);
+        origin_row = if cursor_row >= reserve {
+            cursor_row - reserve + 1 + PAD_TOP
+        } else {
+            1 + PAD_TOP
+        };
+
+        // Clear the reserved lines (removes any shell prompt text to the left)
+        let clear_start = origin_row.saturating_sub(PAD_TOP);
+        for r in clear_start..origin_row + bh {
+            let _ = write!(stdout, "\x1b[{};1H\x1b[2K", r);
+        }
+        let _ = stdout.flush();
+    }
+
+    // Horizontal position (VHS: already set to 1 above)
+    if !vhs_mode {
+        origin_col = if centered {
+            (term_width.saturating_sub(bw)) / 2 + 1
+        } else if right_aligned {
+            term_width.saturating_sub(bw).saturating_sub(PAD_LEFT) + 1
+        } else {
+            PAD_LEFT + 1
+        };
+    }
+
+    // Enter raw mode (skip for VHS)
+    let orig: libc::termios = if !vhs_mode {
+        unsafe {
+            let mut t: libc::termios = std::mem::zeroed();
+            if libc::tcgetattr(fd, &mut t) != 0 {
+                return;
+            }
+            let orig = t;
+            t.c_lflag &= !(libc::ICANON | libc::ECHO);
+            t.c_cc[libc::VMIN] = 0;
+            t.c_cc[libc::VTIME] = 0;
+            libc::tcsetattr(fd, libc::TCSANOW, &t);
+            orig
+        }
+    } else {
+        unsafe { std::mem::zeroed() }
     };
 
     // Hide cursor
@@ -169,16 +194,23 @@ pub fn run(
             done_rendered = true;
         }
 
-        // Check for keypress (non-blocking)
-        let mut buf = [0u8; 64];
-        let n = unsafe { libc::read(fd, buf.as_mut_ptr() as *mut libc::c_void, buf.len()) };
-        if n > 0 {
-            timeline.trigger_freeze();
+        // Check for keypress (non-blocking) — skip in VHS mode
+        if !vhs_mode {
+            let mut buf = [0u8; 64];
+            let n = unsafe { libc::read(fd, buf.as_mut_ptr() as *mut libc::c_void, buf.len()) };
+            if n > 0 {
+                timeline.trigger_freeze();
+            }
+        } else {
+            // VHS mode: auto-trigger freeze after 3 seconds of blinking
+            if matches!(timeline.phase, Phase::Alive) && start_time.elapsed() > std::time::Duration::from_secs(3) {
+                timeline.trigger_freeze();
+            }
         }
 
-        // Handle terminal resize
+        // Handle terminal resize (skip in VHS — fixed size)
         let (cur_width, cur_height) = terminal_size();
-        if cur_width != last_term_width || cur_height != last_term_height {
+        if !vhs_mode && (cur_width != last_term_width || cur_height != last_term_height) {
             // Wait for resize to settle (debounce)
             std::thread::sleep(std::time::Duration::from_millis(100));
             let (cur_width, cur_height) = terminal_size();
@@ -369,8 +401,10 @@ pub fn run(
     let _ = write!(stdout, "\x1b[?25h");
     let _ = stdout.flush();
 
-    unsafe {
-        libc::tcsetattr(fd, libc::TCSANOW, &orig);
+    if !vhs_mode {
+        unsafe {
+            libc::tcsetattr(fd, libc::TCSANOW, &orig);
+        }
     }
 
     // Position cursor right after the final box

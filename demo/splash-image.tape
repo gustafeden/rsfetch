@@ -13,6 +13,4 @@ Set TypingSpeed 20ms
 Env VHS "1"
 Type "blaeckfetch --splash"
 Enter
-Sleep 4s
-Type " "
-Sleep 2s
+Sleep 6s
