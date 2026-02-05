@@ -2,11 +2,10 @@
 
 A fast, minimalist system fetch for your terminal. Written in Rust. Powered by [blaeck](https://github.com/gustafeden/blaeck) for rendering.
 
-## Default mode
 
 ![blaeckfetch default](https://gustafeden.github.io/blaeckfetch/demo/default.gif)
 
-Clean moon logo with essential system info. Everything is customizable:
+Blaeckfetch default logo (moon) with essential system info. Customize as you like:
 
 ```toml
 logo = "arch"
@@ -22,9 +21,12 @@ logo = "magenta"
 
 ## Splash mode
 
+Animated sequence inspired by retro SEGA intro, background image, blinking footer, and collapse exit. Use a custom PNG/JPEG or it will fallback to an ASCII procedural starfield. Press any key to dismiss. Add `blaeckfetch --splash` to your shell RC for a startup splash.
+
+
 ![splash — background image](https://gustafeden.github.io/blaeckfetch/demo/splash-image.gif)
 
-Animated boot sequence with border entrance, background image, blinking footer, and collapse exit. Use a custom PNG/JPEG or the procedural starfield. Press any key to dismiss. Add `blaeckfetch --splash` to your shell RC for a startup splash.
+> More modes to come in the future.
 
 ## Performance
 
